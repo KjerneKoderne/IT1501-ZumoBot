@@ -8,9 +8,9 @@ const int triggerPin1 = 3;
 const int triggerPin2 = 5;
 const int triggerPin3 = 7;
 
-const int ledPin1 = 10;
-const int ledPin2 = 11;
-const int ledPin3 = 12;
+const int right_out = 11;
+const int left_out = 12;
+const int back_out = 13;
 
 const int maxDistance = 50;
 
@@ -26,9 +26,9 @@ void setup() {
   pinMode(triggerPin1, OUTPUT);
   pinMode(triggerPin2, OUTPUT);
   pinMode(triggerPin3, OUTPUT);
-  pinMode(ledPin1, OUTPUT);
-  pinMode(ledPin2, OUTPUT);
-  pinMode(ledPin3, OUTPUT);
+  pinMode(right_out, OUTPUT);
+  pinMode(left_out, OUTPUT);
+  pinMode(back_out, OUTPUT);
 }
 
 void loop() {
@@ -46,21 +46,21 @@ void loop() {
   Serial.println(back_sensor);
 
   if(right_sensor > 0){
-    digitalWrite(ledPin1, HIGH);
+    digitalWrite(right_out, HIGH);
   }else{
-    digitalWrite(ledPin1, LOW);
+    digitalWrite(right_out, LOW);
   }
 
   if(left_sensor > 0){
-    digitalWrite(ledPin2, HIGH);
+    digitalWrite(left_out, HIGH);
   }else{
-    digitalWrite(ledPin2, LOW);
+    digitalWrite(left_out, LOW);
   }
   
   if(back_sensor > 0){
-    digitalWrite(ledPin3, HIGH);
+    digitalWrite(back_out, HIGH);
   }else{
-    digitalWrite(ledPin3, LOW);
+    digitalWrite(back_out, LOW);
   }
   delay(600);
 }
