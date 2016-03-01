@@ -3,10 +3,16 @@
 #include <QTRSensors.h>
 #include <ZumoReflectanceSensorArray.h>
 #define LED 13
+
 unsigned long timeSinceStart;
 unsigned long incrementTime;
 unsigned long turnTime;
 unsigned long reversing;
+
+//Inputs for distance sensors
+const int left_sensor_input = 0;
+const int right_sensor_input = 1;
+const int back_sensor_input  = 6;
 
 boolean drivingBackwards = false;
 boolean hasDrivenBackwards = false;
@@ -31,6 +37,9 @@ ZumoReflectanceSensorArray sensors(QTR_NO_EMITTER_PIN);
 void setup()
 {
    button.waitForButton();
+   pinMode(left_sensor_input, INPUT);
+   pinMode(right_sensor_input, INPUT);
+   pinMode(back_sensor_input, INPUT);
 }
 void loop() {
     
