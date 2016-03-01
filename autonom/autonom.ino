@@ -3,10 +3,20 @@
 #include <QTRSensors.h>
 #include <ZumoReflectanceSensorArray.h>
 #define LED 13
+
 unsigned long timeSinceStart;
 unsigned long incrementTime;
 unsigned long turnTime;
 unsigned long reversing;
+
+//Inputs for distance sensors
+const int left_sensor_input = 0;
+const int right_sensor_input = 1;
+const int back_sensor_input  = 6;
+
+boolean left = LOW;
+boolean right = LOW;
+boolean back = LOW;
 
 boolean drivingBackwards = false;
 boolean hasDrivenBackwards = false;
@@ -31,85 +41,94 @@ ZumoReflectanceSensorArray sensors(QTR_NO_EMITTER_PIN);
 void setup()
 {
    button.waitForButton();
+   pinMode(left_sensor_input, INPUT);
+   pinMode(right_sensor_input, INPUT);
+   pinMode(back_sensor_input, INPUT);
 }
 void loop() {
-    
-    timeSinceStart = millis();
-    motors.setSpeeds(kjorepaa,kjorepaa);
-    sensors.read(sensor_values);
-    Serial.println(sensor_values[0]);
-    //Check if border has been detected by any of the two sensors at each side
-    if ((sensor_values[0] < QTR_THRESHOLD) || (sensor_values[5] < QTR_THRESHOLD)) { // Venstre er 0
-      motors.setSpeeds(0,0);//Stop,
-      if(timeSinceStart - incrementTime > 200 && !drivingBackwards){
-      // Change to opposite direction
-          if (direction){
-            direction  =LOW;
-          }else{
-             direction  =HIGH;
-          }
-      if(sensor_values[0] < QTR_THRESHOLD){
-        leftHadLight = true;
+   timeSinceStart = millis();
+   motors.setSpeeds(kjorepaa,kjorepaa);
+   right = digitalRead(right_sensor_input);
+   left = digitalRead(left_sensor_input);
+   back = digitalRead(back_sensor_input);
+     
+      if(right == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
+         //sving 90 grader høyre
+         motors.setSpeeds(100,100);
+         delay(2000);
+      }else if(left == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
+         //sving 90 grader venstre
+         motors.setSpeeds(100,100);
+         delay(2000);
+      }else if(back == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
+         //sving 180 grader
+         motors.setSpeeds(100,100);
+         delay(2000);
+      }else{
+       
+       sensors.read(sensor_values);
+       //Check if border has been detected by any of the two sensors at each side
+       if ((sensor_values[0] < QTR_THRESHOLD) || (sensor_values[5] < QTR_THRESHOLD)) { // Venstre er 0
+         motors.setSpeeds(0,0);//Stop,
+         if(timeSinceStart - incrementTime > 200 && !drivingBackwards){
+         // Change to opposite direction
+             if (direction){
+               direction  =LOW;
+             }else{
+                direction  =HIGH;
+             }
+         if(sensor_values[0] < QTR_THRESHOLD){
+           leftHadLight = true;
+         }
+         else{
+           rightHadLight = true;
+         }
+         motors.flipRightMotor(direction);
+         motors.flipLeftMotor(direction);
+         motors.setSpeeds(kjorepaa, kjorepaa);
+         drivingBackwards = true;
+         reversing = timeSinceStart;
       }
-      else{
-        rightHadLight = true;
+       incrementTime = timeSinceStart;
       }
-      motors.flipRightMotor(direction);
-      motors.flipLeftMotor(direction);
-      motors.setSpeeds(kjorepaa, kjorepaa);
-      drivingBackwards = true;
-      reversing = timeSinceStart;
+      
+      //Venter til bilen har rygga i 200 millisekund.
+      if(drivingBackwards && timeSinceStart - reversing > 200){
+       drivingBackwards = false;
+       hasDrivenBackwards = true;
+       if (direction){
+         direction  =LOW;
+       }else{
+         direction  =HIGH;
+       }
+       motors.setSpeeds(0,0);
+      }
+      
+      //Får bilen til å svinge etter bilen har rygga.
+      if (hasDrivenBackwards && (leftHadLight||rightHadLight)){
+       if(leftHadLight){
+          motors.flipLeftMotor(direction);
+       }
+       if(rightHadLight){
+          motors.flipRightMotor(direction);
+       }
+       motors.setSpeeds(kjorepaa, kjorepaa);
+       turningRight = true;
+       turnTime = timeSinceStart;
+       leftHadLight = false;
+       rightHadLight = false;
+       hasDrivenBackwards = false;
+      }
+      
+      //Lar bilen kjøre framover igjen etter 250 millisekund. 
+      if(timeSinceStart - turnTime > 250 && (turningRight || turningLeft)){
+       direction = LOW;
+       motors.flipLeftMotor(direction);
+       motors.flipRightMotor(direction);
+       motors.setSpeeds(kjorepaa, kjorepaa);
+       turningRight = false;
+       turningLeft = false;
+       //turnTime = timeSinceStart;
+      }
    }
-    incrementTime = timeSinceStart;
-  }
-
-//Venter til bilen har rygga i 200 millisekund.
-  if(drivingBackwards && timeSinceStart - reversing > 200){
-    drivingBackwards = false;
-    hasDrivenBackwards = true;
-    if (direction){
-      direction  =LOW;
-    }else{
-      direction  =HIGH;
-    }
-    motors.setSpeeds(0,0);
-  }
-
-//Får bilen til å svinge etter bilen har rygga.
-  if (hasDrivenBackwards && leftHadLight){
-    motors.flipLeftMotor(direction);
-    motors.setSpeeds(kjorepaa, kjorepaa);
-    turningRight = true;
-    turnTime = timeSinceStart;
-    leftHadLight = false;
-    hasDrivenBackwards = false;
-  }if (hasDrivenBackwards && rightHadLight){
-    motors.flipRightMotor(direction);
-    motors.setSpeeds(kjorepaa, kjorepaa);
-    turningLeft = true;
-    turnTime = timeSinceStart;
-    rightHadLight = false;
-    hasDrivenBackwards = false;
-  }
-
-  //Lar bilen kjøre framover igjen etter 250 millisekund. 
-  if(timeSinceStart - turnTime > 250 && turningRight){
-    direction = LOW;
-    motors.flipLeftMotor(direction);
-    motors.flipRightMotor(direction);
-    motors.setSpeeds(kjorepaa, kjorepaa);
-    turningRight = false;
-    turningLeft = false;
-    //turnTime = timeSinceStart;
-  }if(timeSinceStart - turnTime > 250 && turningLeft){
-    direction = LOW;
-    motors.flipLeftMotor(direction);
-    motors.flipRightMotor(direction);
-    motors.setSpeeds(kjorepaa, kjorepaa);
-    turningLeft = false;
-    turningRight = false;
-    //turnTime = timeSinceStart;
-    
-  }
-  //motors.setSpeeds(200, 200);
 }
