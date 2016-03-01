@@ -54,12 +54,16 @@ void loop() {
      
       if(right == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
          //sving 90 grader høyre
-     
+         motors.setSpeeds(100,100);
+         delay(2000);
       }else if(left == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
          //sving 90 grader venstre
-     
+         motors.setSpeeds(100,100);
+         delay(2000);
       }else if(back == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
          //sving 180 grader
+         motors.setSpeeds(100,100);
+         delay(2000);
       }else{
        
        sensors.read(sensor_values);
