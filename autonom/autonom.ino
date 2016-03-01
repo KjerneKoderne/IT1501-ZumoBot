@@ -14,6 +14,10 @@ const int left_sensor_input = 0;
 const int right_sensor_input = 1;
 const int back_sensor_input  = 6;
 
+boolean left = LOW;
+boolean right = LOW;
+boolean back = LOW;
+
 boolean drivingBackwards = false;
 boolean hasDrivenBackwards = false;
 boolean leftHadLight = false;
@@ -42,22 +46,23 @@ void setup()
    pinMode(back_sensor_input, INPUT);
 }
 void loop() {
-    
-    timeSinceStart = millis();
-    motors.setSpeeds(kjorepaa,kjorepaa);
-    sensors.read(sensor_values);
-    
-   if(!(drivingBackwards && turningRight && turningLeft)){
-      if(right_sensor_input == HIGH){
+   timeSinceStart = millis();
+   motors.setSpeeds(kjorepaa,kjorepaa);
+   right = digitalRead(right_sensor_input);
+   left = digitalRead(left_sensor_input);
+   back = digitalRead(back_sensor_input);
+     
+      if(right == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
          //sving 90 grader høyre
      
-      }else if(left_sensor_input == HIGH){
+      }else if(left == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
          //sving 90 grader venstre
      
-      }else if(back_sensor_input == HIGH){
+      }else if(back == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
          //sving 180 grader
-   }
-   }else{
+      }else{
+       
+       sensors.read(sensor_values);
        //Check if border has been detected by any of the two sensors at each side
        if ((sensor_values[0] < QTR_THRESHOLD) || (sensor_values[5] < QTR_THRESHOLD)) { // Venstre er 0
          motors.setSpeeds(0,0);//Stop,
