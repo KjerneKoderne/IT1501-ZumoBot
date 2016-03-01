@@ -46,7 +46,9 @@ void loop() {
     timeSinceStart = millis();
     motors.setSpeeds(kjorepaa,kjorepaa);
     sensors.read(sensor_values);
-    Serial.println(sensor_values[0]);
+    
+    
+    
     //Check if border has been detected by any of the two sensors at each side
     if ((sensor_values[0] < QTR_THRESHOLD) || (sensor_values[5] < QTR_THRESHOLD)) { // Venstre er 0
       motors.setSpeeds(0,0);//Stop,
@@ -102,7 +104,7 @@ void loop() {
   }
 
   //Lar bilen kjøre framover igjen etter 250 millisekund. 
-  if(timeSinceStart - turnTime > 250 && turningRight){
+  if(timeSinceStart - turnTime > 250 && (turningRight || turningLeft)){
     direction = LOW;
     motors.flipLeftMotor(direction);
     motors.flipRightMotor(direction);
@@ -110,15 +112,5 @@ void loop() {
     turningRight = false;
     turningLeft = false;
     //turnTime = timeSinceStart;
-  }if(timeSinceStart - turnTime > 250 && turningLeft){
-    direction = LOW;
-    motors.flipLeftMotor(direction);
-    motors.flipRightMotor(direction);
-    motors.setSpeeds(kjorepaa, kjorepaa);
-    turningLeft = false;
-    turningRight = false;
-    //turnTime = timeSinceStart;
-    
   }
-  //motors.setSpeeds(200, 200);
 }
