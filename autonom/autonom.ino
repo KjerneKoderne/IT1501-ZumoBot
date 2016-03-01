@@ -25,8 +25,9 @@ boolean rightHadLight = false;
 
 boolean turningRight = false;
 boolean turningLeft = false;
+boolean rotating = false;
 
-int kjorepaa = 400;
+int kjorepaa = 200;
 // this might need to be tuned for different
 
 #define QTR_THRESHOLD 1500// this might need to be tuned for different
@@ -51,19 +52,28 @@ void loop() {
    right = digitalRead(right_sensor_input);
    left = digitalRead(left_sensor_input);
    back = digitalRead(back_sensor_input);
+   Serial.println("Right " + right);
+   Serial.println("Left " + left);
+   Serial.println("Back " + back);
      
       if(right == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
          //sving 90 grader høyre
-         motors.setSpeeds(100,100);
-         delay(2000);
+         motors.flipRightMotor(direction);
+         motors.setSpeeds(kjorepaa, kjorepaa);
+         turningRight = true;
+         turnTime = timeSinceStart;
       }else if(left == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
          //sving 90 grader venstre
-         motors.setSpeeds(100,100);
-         delay(2000);
+         motors.flipLeftMotor(direction);
+         motors.setSpeeds(kjorepaa, kjorepaa);
+         turningLeft = true;
+         turnTime = timeSinceStart;
       }else if(back == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
          //sving 180 grader
-         motors.setSpeeds(100,100);
-         delay(2000);
+         motors.flipRightMotor(direction);
+         motors.setSpeeds(kjorepaa, kjorepaa);
+         rotating = true;
+         turnTime = timeSinceStart;
       }else{
        
        sensors.read(sensor_values);
@@ -128,7 +138,18 @@ void loop() {
        motors.setSpeeds(kjorepaa, kjorepaa);
        turningRight = false;
        turningLeft = false;
+       rotating = false;
        //turnTime = timeSinceStart;
+      }
+      if(timeSinceStart - turnTime > 500 && rotating){
+        direction = LOW;
+        motors.flipLeftMotor(direction);
+        motors.flipRightMotor(direction);
+        motors.setSpeeds(kjorepaa, kjorepaa);
+        turningRight = false;
+        turningLeft = false;
+        rotating = false;
+        
       }
    }
 }

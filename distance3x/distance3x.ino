@@ -12,7 +12,7 @@ const int right_out = 11;
 const int left_out = 12;
 const int back_out = 13;
 
-const int maxDistance = 50;
+const int maxDistance = 7;
 
 NewPing sonar1(triggerPin1, echoPin1, maxDistance);
 NewPing sonar2(triggerPin2, echoPin2, maxDistance);
