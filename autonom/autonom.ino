@@ -40,6 +40,7 @@ ZumoReflectanceSensorArray sensors(QTR_NO_EMITTER_PIN);
 
 void setup()
 {
+   Serial.begin(9600);
    button.waitForButton();
    pinMode(left_sensor_input, INPUT);
    pinMode(right_sensor_input, INPUT);
@@ -51,20 +52,41 @@ void loop() {
    right = digitalRead(right_sensor_input);
    left = digitalRead(left_sensor_input);
    back = digitalRead(back_sensor_input);
+   Serial.println(" ");
+   if(right == HIGH){
+    Serial.println(right);
+   }
+   if(left == HIGH){
+    Serial.println(left);
+   }
+   
+   Serial.println(back);
      
       if(right == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
          //sving 90 grader høyre
-         motors.setSpeeds(100,100);
-         delay(2000);
+         direction = HIGH;
+         motors.flipRightMotor(direction);
+         motors.setSpeeds(kjorepaa, kjorepaa);
+         delay(200);
+         direction = LOW;
+         motors.flipRightMotor(direction);
+         motors.setSpeeds(kjorepaa, kjorepaa);
+         delay(200);
       }else if(left == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
          //sving 90 grader venstre
-         motors.setSpeeds(100,100);
-         delay(2000);
-      }else if(back == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
+         direction = HIGH;
+         motors.flipLeftMotor(direction);
+         motors.setSpeeds(kjorepaa, kjorepaa);
+         delay(200);
+         direction = LOW;
+         motors.flipLeftMotor(direction);
+         motors.setSpeeds(kjorepaa, kjorepaa);
+         delay(200);
+      }/*else if(back == HIGH && drivingBackwards == false && turningRight == false && turningLeft == false){
          //sving 180 grader
          motors.setSpeeds(100,100);
          delay(2000);
-      }else{
+      }*/
        
        sensors.read(sensor_values);
        //Check if border has been detected by any of the two sensors at each side
@@ -130,5 +152,4 @@ void loop() {
        turningLeft = false;
        //turnTime = timeSinceStart;
       }
-   }
 }

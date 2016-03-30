@@ -12,7 +12,7 @@ const int right_out = 11;
 const int left_out = 12;
 const int back_out = 13;
 
-const int maxDistance = 50;
+const int maxDistance = 30;
 
 NewPing sonar1(triggerPin1, echoPin1, maxDistance);
 NewPing sonar2(triggerPin2, echoPin2, maxDistance);
@@ -45,22 +45,22 @@ void loop() {
   Serial.println(left_sensor);
   Serial.println(back_sensor);
 
-  if(right_sensor > 0){
+  if(right_sensor > 4){
     digitalWrite(right_out, HIGH);
   }else{
     digitalWrite(right_out, LOW);
   }
 
-  if(left_sensor > 0){
+  if(left_sensor > 4){
     digitalWrite(left_out, HIGH);
   }else{
     digitalWrite(left_out, LOW);
   }
   
-  if(back_sensor > 0){
+  if(back_sensor > 4){
     digitalWrite(back_out, HIGH);
   }else{
     digitalWrite(back_out, LOW);
   }
-  delay(600);
+  delay(80);
 }
